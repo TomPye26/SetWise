@@ -1,12 +1,17 @@
 from app.schemas.exercise import (
     ExerciseCreate,
     ExerciseResponse,
-    ExerciseUpdate
+    ExerciseUpdate,
 )
 from app.schemas.user import (
     UserCreate,
     UserResponse,
-    UserUpdate
+    UserUpdate,
+)
+from app.schemas.workout import (
+    WorkoutCreate,
+    WorkoutResponse,
+    WorkoutUpdate,
 )
 
 __all__ = [
@@ -17,4 +22,8 @@ __all__ = [
     "UserCreate",
     "UserResponse",
     "UserUpdate",
+
+    "WorkoutCreate",
+    "WorkoutResponse",
+    "WorkoutUpdate",
 ]
