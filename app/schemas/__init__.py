@@ -3,9 +3,18 @@ from app.schemas.exercise import (
     ExerciseResponse,
     ExerciseUpdate
 )
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    UserUpdate
+)
 
 __all__ = [
     "ExerciseCreate",
     "ExerciseResponse",
-    "ExerciseUpdate"
+    "ExerciseUpdate",
+
+    "UserCreate",
+    "UserResponse",
+    "UserUpdate",
 ]
