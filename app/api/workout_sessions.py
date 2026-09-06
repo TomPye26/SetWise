@@ -53,6 +53,23 @@ def create_workout_session(
             detail="User not found",
         )
 
+    # check user doesn't already have a session open
+    # adding old sessions retrospectively is allowed (by checking completed_at)
+    if session_data.completed_at is None:
+        existing_session = (
+            db.query(WorkoutSession)
+            .filter(
+                WorkoutSession.user_id == session_data.user_id,
+                WorkoutSession.completed_at.is_(None),
+            )
+            .first()
+        )
+
+        if existing_session is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="User already has a workout in progress",
+            )
     workout = db.get(Workout, session_data.workout_id)
 
     if workout is None:
