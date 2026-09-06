@@ -92,7 +92,7 @@ def create_workout_session(
     return session
 
 
-@router.put("/{session_id}", response_model=WorkoutSessionResponse)
+@router.patch("/{session_id}", response_model=WorkoutSessionResponse)
 def update_workout_session(
     session_id: int,
     session_data: WorkoutSessionUpdate,

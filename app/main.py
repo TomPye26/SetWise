@@ -4,6 +4,7 @@ from app.api.exercises import router as exercises_router
 from app.api.users import router as users_router
 from app.api.workouts import router as workouts_router
 from app.api.workout_sessions import router as workout_sessions_router
+from app.api.exercise_sets import router as exercise_sets_router
 
 app = FastAPI()
 
@@ -25,5 +26,10 @@ app.include_router(
 
 app.include_router(
     workout_sessions_router,
+    prefix="/api"
+)
+
+app.include_router(
+    exercise_sets_router,
     prefix="/api"
 )
