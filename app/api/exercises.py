@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.db.dependencies import get_db
 from app.models import Exercise
@@ -39,7 +40,16 @@ def create_exercise(
     )
 
     db.add(exercise)
-    db.commit()
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Exercise already exists",
+        )
+
     db.refresh(exercise)
 
     return exercise
