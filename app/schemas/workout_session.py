@@ -5,7 +5,8 @@ from pydantic import BaseModel
 
 class WorkoutSessionCreate(BaseModel):
     user_id: int
-    workout_id: int
+    workout_id: int | None = None
+    label: str | None = None
     started_at: datetime | None = None
     completed_at: datetime | None = None
 
@@ -16,7 +17,8 @@ class WorkoutSessionUpdate(BaseModel):
 class WorkoutSessionResponse(BaseModel):
     id: int
     user_id: int
-    workout_id: int
+    workout_id: int | None = None
+    label: str | None = None
     started_at: datetime
     completed_at: datetime | None
 

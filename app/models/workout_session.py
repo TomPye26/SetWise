@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
@@ -16,9 +16,14 @@ class WorkoutSession(Base):
         nullable=False,
     )
 
-    workout_id: Mapped[int] = mapped_column(
+    workout_id: Mapped[int | None] = mapped_column(
         ForeignKey("workouts.id"),
-        nullable=False,
+        nullable=True,
+    )
+
+    label: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
     )
 
     started_at: Mapped[datetime] = mapped_column(nullable=False)
