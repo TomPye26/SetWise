@@ -13,6 +13,10 @@ from app.schemas.workout import (
     WorkoutResponse,
     WorkoutUpdate,
 )
+from app.schemas.workout_exercise import (
+    WorkoutExerciseCreate,
+    WorkoutExerciseResponse,
+)
 
 __all__ = [
     "ExerciseCreate",
@@ -26,4 +30,7 @@ __all__ = [
     "WorkoutCreate",
     "WorkoutResponse",
     "WorkoutUpdate",
+
+    "WorkoutExerciseCreate",
+    "WorkoutExerciseResponse",
 ]

@@ -4,7 +4,14 @@ from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
 from app.models import User, Workout
-from app.schemas import WorkoutCreate, WorkoutResponse, WorkoutUpdate
+from app.models import Exercise, User, Workout, WorkoutExercise
+from app.schemas import (
+    WorkoutCreate,
+    WorkoutExerciseCreate,
+    WorkoutExerciseResponse,
+    WorkoutResponse,
+    WorkoutUpdate,
+)
 
 router = APIRouter(prefix="/workouts", tags=["workouts"])
 
@@ -106,3 +113,103 @@ def delete_workout(
     db.commit()
 
     return {"message": "Workout deleted successfully"}
+
+
+@router.get(
+    "/{workout_id}/exercises",
+    response_model=list[WorkoutExerciseResponse],
+)
+def get_workout_exercises(
+    workout_id: int,
+    db: Session = Depends(get_db),
+):
+    workout = db.get(Workout, workout_id)
+
+    if workout is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Workout not found",
+        )
+
+    return (
+        db.query(WorkoutExercise)
+        .filter(WorkoutExercise.workout_id == workout_id)
+        .order_by(WorkoutExercise.position)
+        .all()
+    )
+
+
+@router.post(
+    "/{workout_id}/exercises",
+    response_model=WorkoutExerciseResponse,
+)
+def add_exercise_to_workout(
+    workout_id: int,
+    exercise_data: WorkoutExerciseCreate,
+    db: Session = Depends(get_db),
+):
+    workout = db.get(Workout, workout_id)
+
+    if workout is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Workout not found",
+        )
+
+    exercise = db.get(Exercise, exercise_data.exercise_id)
+
+    if exercise is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Exercise not found",
+        )
+
+    workout_exercise = WorkoutExercise(
+        workout_id=workout_id,
+        exercise_id=exercise_data.exercise_id,
+        position=exercise_data.position,
+    )
+
+    db.add(workout_exercise)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Exercise already exists in this workout",
+        )
+
+    db.refresh(workout_exercise)
+
+    return workout_exercise
+
+
+@router.delete(
+    "/{workout_id}/exercises/{exercise_id}",
+)
+def remove_exercise_from_workout(
+    workout_id: int,
+    exercise_id: int,
+    db: Session = Depends(get_db),
+):
+    workout_exercise = (
+        db.query(WorkoutExercise)
+        .filter(
+            WorkoutExercise.workout_id == workout_id,
+            WorkoutExercise.exercise_id == exercise_id,
+        )
+        .first()
+    )
+
+    if workout_exercise is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Exercise not found in this workout",
+        )
+
+    db.delete(workout_exercise)
+    db.commit()
+
+    return {"message": "Exercise removed from workout"}
