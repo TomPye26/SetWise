@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SetWise</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <main>
+        <h1>SetWise</h1>
+
+        <!-- home screen -->
+        <div id="home">
+            <button id="start-workout-button">
+                Start Workout
+            </button>
+
+            <h2>Your Workouts</h2>
+
+            <div id="workouts"></div>
+        </div>
+
+        <!-- start workout screen -->
+        <div id="start-workout" hidden>
+            <button id="back-button">← Back</button>
+
+            <h2>Start Workout</h2>
+
+            <p>Label (optional)</p>
+
+            <div id="labels">
+                <button class="label-button" data-label="">
+                    None
+                </button>
+
+                <button class="label-button" data-label="Push">
+                    Push
+                </button>
+
+                <button class="label-button" data-label="Pull">
+                    Pull
+                </button>
+
+                <button class="label-button" data-label="Legs">
+                    Legs
+                </button>
+            </div>
+
+            <button id="custom-label-button">
+                + Custom label
+            </button>
+
+            <input
+                id="custom-label"
+                type="text"
+                placeholder="e.g. Upper Body"
+                hidden
+            >
+
+            <button id="confirm-start-button">
+                Start Workout
+            </button>
+        </div>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
