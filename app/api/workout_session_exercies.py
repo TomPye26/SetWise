@@ -10,7 +10,7 @@ from app.schemas.workout_session_exercise import (
 )
 
 router = APIRouter(
-    prefix="/api/workout-session-exercises",
+    prefix="/workout-session-exercises",
     tags=["workout-session-exercises"],
 )
 
