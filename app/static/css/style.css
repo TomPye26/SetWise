@@ -60,3 +60,35 @@ input {
 #custom-label {
     margin-top: 4px;
 }
+
+.exercise-card {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.exercise-card h3 {
+    margin-top: 0;
+}
+
+.exercise-card table {
+    width: 100%;
+    margin-bottom: 12px;
+    border-collapse: collapse;
+}
+
+.exercise-card th,
+.exercise-card td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.exercise-card input {
+    width: 100%;
+    padding: 8px;
+    margin: 0;
+    font-size: 14px;
+}

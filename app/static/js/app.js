@@ -1,5 +1,10 @@
+
+// dom elements
+
 const home = document.getElementById("home");
 const startWorkout = document.getElementById("start-workout");
+const activeWorkout = document.getElementById("active-workout");
+const exercisePicker = document.getElementById("exercise-picker");
 
 const startWorkoutButton =
     document.getElementById("start-workout-button");
@@ -19,74 +24,31 @@ const customLabel =
 const confirmStartButton =
     document.getElementById("confirm-start-button");
 
+const activeWorkoutLabel =
+    document.getElementById("active-workout-label");
 
-let selectedLabel = "";
+const activeBackButton =
+    document.getElementById("active-back-button");
 
+const addExerciseButton =
+    document.getElementById("add-exercise-button");
 
-function showScreen(screen) {
-    home.hidden = true;
-    startWorkout.hidden = true;
+const exercisePickerBackButton =
+    document.getElementById("exercise-picker-back-button");
 
-    screen.hidden = false;
-}
+const exerciseList =
+    document.getElementById("exercise-list");
 
-
-startWorkoutButton.addEventListener("click", () => {
-    showScreen(startWorkout);
-});
-
-
-backButton.addEventListener("click", () => {
-    showScreen(home);
-});
+const activeExercises =
+    document.getElementById("active-exercises");
 
 
-for (const button of labelButtons) {
-    button.addEventListener("click", () => {
-        selectedLabel = button.dataset.label;
+// app state
 
-        for (const labelButton of labelButtons) {
-            labelButton.classList.remove("selected");
-        }
-
-        button.classList.add("selected");
-
-        customLabel.hidden = true;
-    });
-}
+let activeSession = null;
 
 
-customLabelButton.addEventListener("click", () => {
-    customLabel.hidden = false;
-    customLabel.focus();
+// initialise app
 
-    for (const labelButton of labelButtons) {
-        labelButton.classList.remove("selected");
-    }
-
-    selectedLabel = "";
-});
-
-
-customLabel.addEventListener("input", () => {
-    selectedLabel = customLabel.value;
-});
-
-
-
-confirmStartButton.addEventListener("click", async () => {
-    const response = await fetch("/api/workout-sessions/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: 1,
-            label: selectedLabel || null,
-        }),
-    });
-
-    const session = await response.json();
-
-    console.log("Started workout:", session);
-});
+initialiseStartWorkout();
+initialiseActiveWorkout();
