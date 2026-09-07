@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
@@ -39,8 +40,7 @@ def get_workout_session(
 
     return session
 
-
-@router.post("/", response_model=WorkoutSessionResponse)
+@router.post("/", response_model=WorkoutSessionResponse, status_code=201)
 def create_workout_session(
     session_data: WorkoutSessionCreate,
     db: Session = Depends(get_db),
@@ -53,35 +53,36 @@ def create_workout_session(
             detail="User not found",
         )
 
-    # check user doesn't already have a session open
-    # adding old sessions retrospectively is allowed (by checking completed_at)
+    if session_data.workout_id is not None:
+        workout = db.get(Workout, session_data.workout_id)
+
+        if workout is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Workout not found",
+            )
+
     if session_data.completed_at is None:
-        existing_session = (
-            db.query(WorkoutSession)
-            .filter(
+        active_session = db.scalar(
+            select(WorkoutSession).where(
                 WorkoutSession.user_id == session_data.user_id,
                 WorkoutSession.completed_at.is_(None),
             )
-            .first()
         )
 
-        if existing_session is not None:
+        if active_session is not None:
             raise HTTPException(
                 status_code=409,
-                detail="User already has a workout in progress",
+                detail="User already has an active workout session",
             )
-    workout = db.get(Workout, session_data.workout_id)
 
-    if workout is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Workout not found",
-        )
+    started_at = session_data.started_at or datetime.utcnow()
 
     session = WorkoutSession(
         user_id=session_data.user_id,
         workout_id=session_data.workout_id,
-        started_at=session_data.started_at or datetime.now(),
+        label=session_data.label,
+        started_at=started_at,
         completed_at=session_data.completed_at,
     )
 
