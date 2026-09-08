@@ -95,6 +95,35 @@ function createExerciseCard(exercise) {
     return card;
 }
 
+
+async function saveSet(
+    exerciseId,
+    setNumber,
+    weight,
+    reps,
+    row,
+) {
+    if (!weight || !reps) {
+        return;
+    }
+
+    const set = await addExerciseSet(
+        activeSession.id,
+        exerciseId,
+        {
+            set_number: setNumber,
+            weight: Number(weight),
+            weight_unit: "kg",
+            reps: Number(reps),
+        },
+    );
+
+    console.log("Saved set:", set);
+
+    row.classList.add("completed");
+}
+
+
 function addSetRow(table, exercise) {
     const setNumber = table.rows.length;
 
@@ -122,9 +151,27 @@ function addSetRow(table, exercise) {
 
     repsCell.appendChild(repsInput);
 
+    const actionCell = document.createElement("td");
+    const saveButton = document.createElement("button");
+
+    saveButton.textContent = "✓";
+
+    saveButton.addEventListener("click", async () => {
+        await saveSet(
+            exercise.id,
+            setNumber,
+            weightInput.value,
+            repsInput.value,
+            row,
+        );
+    });
+
+    actionCell.appendChild(saveButton);
+
     row.appendChild(setCell);
     row.appendChild(weightCell);
     row.appendChild(repsCell);
+    row.appendChild(actionCell);
 
     table.appendChild(row);
 }

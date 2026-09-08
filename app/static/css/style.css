@@ -92,3 +92,17 @@ input {
     margin: 0;
     font-size: 14px;
 }
+
+.exercise-card td:last-child {
+    width: 50px;
+}
+
+.exercise-card td:last-child button {
+    width: auto;
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.exercise-card tr.completed {
+    opacity: 0.6;
+}
