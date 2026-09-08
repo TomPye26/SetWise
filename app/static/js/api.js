@@ -103,3 +103,25 @@ async function getSessionSets(sessionId) {
 
     return await response.json();
 }
+
+
+async function finishWorkoutSession(sessionId) {
+    const response = await fetch(
+        `/api/workout-sessions/${sessionId}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                completed_at: new Date().toISOString(),
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to finish workout");
+    }
+
+    return await response.json();
+}

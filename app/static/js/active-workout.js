@@ -15,6 +15,10 @@ function initialiseActiveWorkout() {
     exercisePickerBackButton.addEventListener("click", () => {
         showScreen(activeWorkout);
     });
+
+    finishWorkoutButton.addEventListener("click", async () => {
+        await finishWorkout();
+    });
 }
 
 // restore active workout
@@ -72,6 +76,23 @@ async function restoreSessionExercises() {
     }
 }
 
+
+// finish workout
+
+async function finishWorkout() {
+    const session = await finishWorkoutSession(
+        activeSession.id
+    );
+
+    console.log("Finished workout:", session);
+
+    activeSession = null;
+    activeSessionExercises = [];
+
+    activeExercises.replaceChildren();
+
+    showScreen(home);
+}
 
 // exercise management
 

@@ -42,6 +42,9 @@ const exerciseList =
 const activeExercises =
     document.getElementById("active-exercises");
 
+const finishWorkoutButton =
+    document.getElementById("finish-workout-button");
+
 
 // app state
 
