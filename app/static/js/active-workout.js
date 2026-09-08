@@ -2,7 +2,10 @@
 // initialise active workout
 
 function initialiseActiveWorkout() {
-    activeBackButton.addEventListener("click", () => {
+
+    activeBackButton.addEventListener("click", async () => {
+        await loadWorkoutHistory();
+
         showScreen(home);
     });
 
@@ -27,18 +30,16 @@ async function restoreActiveWorkout() {
     try {
         const session = await getActiveWorkoutSession(1);
 
-        activeSession = session;
+        if (!session) {
+            return;
+        }
 
-        activeWorkoutLabel.textContent =
-            session.label || "Workout";
-
-        await restoreSessionExercises();
-
-        showScreen(activeWorkout);
+        await openWorkoutSession(session);
     } catch (error) {
         console.error("Failed to restore active workout:", error);
     }
 }
+
 async function restoreSessionExercises() {
     const sessionExercises =
         await getSessionExercises(activeSession.id);
@@ -76,6 +77,18 @@ async function restoreSessionExercises() {
     }
 }
 
+async function openWorkoutSession(session) {
+    activeSession = session;
+    activeSessionExercises = [];
+
+    activeWorkoutLabel.textContent =
+        session.label || "Workout";
+
+    await restoreSessionExercises();
+
+    showScreen(activeWorkout);
+}
+
 
 // finish workout
 
@@ -90,6 +103,8 @@ async function finishWorkout() {
     activeSessionExercises = [];
 
     activeExercises.replaceChildren();
+
+    await loadWorkoutHistory();
 
     showScreen(home);
 }

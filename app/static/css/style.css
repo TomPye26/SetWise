@@ -115,3 +115,20 @@ input {
 .exercise-card td:nth-child(2) input {
     flex: 1;
 }
+
+.workout-card {
+    margin-bottom: 16px;
+    padding: 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.workout-card h3 {
+    margin: 0 0 8px;
+}
+
+.workout-card p {
+    margin: 0 0 12px;
+    color: #666;
+}

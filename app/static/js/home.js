@@ -1,0 +1,91 @@
+
+function initialiseHome() {
+    loadWorkoutHistory();
+}
+
+
+async function loadWorkoutHistory() {
+    const sessions = await getWorkoutSessions(1);
+
+    renderWorkoutHistory(sessions);
+}
+
+
+function renderWorkoutHistory(sessions) {
+    workouts.replaceChildren();
+
+    const activeSessions = sessions.filter(
+        (session) => session.completed_at === null
+    );
+
+    const completedSessions = sessions.filter(
+        (session) => session.completed_at !== null
+    );
+
+    if (activeSessions.length > 0) {
+        const activeHeading = document.createElement("h3");
+        activeHeading.textContent = "Continue Workout";
+
+        workouts.appendChild(activeHeading);
+
+        for (const session of activeSessions) {
+            workouts.appendChild(
+                createWorkoutCard(session, true)
+            );
+        }
+    }
+
+    if (completedSessions.length > 0) {
+        const historyHeading = document.createElement("h3");
+        historyHeading.textContent = "Workout History";
+
+        workouts.appendChild(historyHeading);
+
+        for (const session of completedSessions) {
+            workouts.appendChild(
+                createWorkoutCard(session, false)
+            );
+        }
+    }
+}
+
+
+function createWorkoutCard(session, isActive) {
+    const card = document.createElement("div");
+    card.classList.add("workout-card");
+
+    const title = document.createElement("h3");
+    title.textContent = session.label || "Workout";
+
+    const date = document.createElement("p");
+    date.textContent = formatWorkoutDate(session.started_at);
+
+    card.appendChild(title);
+    card.appendChild(date);
+
+    if (isActive) {
+        const continueButton = document.createElement("button");
+        continueButton.textContent = "Continue";
+
+    continueButton.addEventListener("click", async () => {
+        await openWorkoutSession(session);
+    });
+
+        card.appendChild(continueButton);
+    }
+
+    return card;
+}
+
+
+function formatWorkoutDate(dateString) {
+    const date = new Date(dateString);
+
+    return date.toLocaleString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}

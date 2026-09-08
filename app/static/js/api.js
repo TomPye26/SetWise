@@ -85,11 +85,17 @@ async function getActiveWorkoutSession(userId) {
         `/api/workout-sessions/user/${userId}/active`
     );
 
+    if (response.status === 404) {
+        return null;
+    }
+
     if (!response.ok) {
         throw new Error("Failed to get active workout");
     }
 
-    return await response.json();
+    active_workout_sessions = await response.json();
+
+    return active_workout_sessions;
 }
 
 async function getSessionSets(sessionId) {
@@ -121,6 +127,18 @@ async function finishWorkoutSession(sessionId) {
 
     if (!response.ok) {
         throw new Error("Failed to finish workout");
+    }
+
+    return await response.json();
+}
+
+async function getWorkoutSessions(userId) {
+    const response = await fetch(
+        `/api/workout-sessions/user/${userId}`
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to get workout sessions");
     }
 
     return await response.json();

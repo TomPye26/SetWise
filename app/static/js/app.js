@@ -9,6 +9,9 @@ const exercisePicker = document.getElementById("exercise-picker");
 const startWorkoutButton =
     document.getElementById("start-workout-button");
 
+const workouts =
+    document.getElementById("workouts");
+
 const backButton =
     document.getElementById("back-button");
 
@@ -54,6 +57,7 @@ let activeSessionExercises = [];
 
 // initialise app
 
+initialiseHome();
 initialiseStartWorkout();
 initialiseActiveWorkout();
-restoreActiveWorkout();
+// restoreActiveWorkout();

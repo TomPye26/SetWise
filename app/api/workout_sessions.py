@@ -157,3 +157,27 @@ def get_active_workout_session(
         )
 
     return session
+
+@router.get(
+    "/user/{user_id}",
+    response_model=list[WorkoutSessionResponse],
+)
+def get_user_workout_sessions(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    user = db.get(User, user_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    all_workout_sessions = db.scalars(
+        select(WorkoutSession)
+        .where(WorkoutSession.user_id == user_id)
+        .order_by(WorkoutSession.started_at.desc())
+    ).all()
+
+    return all_workout_sessions

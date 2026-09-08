@@ -8,7 +8,9 @@ function initialiseStartWorkout() {
     });
 
 
-    backButton.addEventListener("click", () => {
+    backButton.addEventListener("click", async () => {
+        await loadWorkoutHistory();
+
         showScreen(home);
     });
 
