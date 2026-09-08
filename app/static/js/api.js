@@ -143,3 +143,37 @@ async function getWorkoutSessions(userId) {
 
     return await response.json();
 }
+
+async function deleteExerciseSet(setId) {
+    const response = await fetch(
+        `/api/exercise-sets/${setId}`,
+        {
+            method: "DELETE",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to delete set");
+    }
+
+    return await response.json();
+}
+
+async function updateExerciseSet(setId, setData) {
+    const response = await fetch(
+        `/api/exercise-sets/${setId}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(setData),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to update set");
+    }
+
+    return await response.json();
+}

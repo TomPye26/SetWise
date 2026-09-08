@@ -114,6 +114,15 @@ async function finishWorkout() {
 async function loadExercises() {
     const exercises = await getExercises();
 
+    const sessionExercises =
+        await getSessionExercises(activeSession.id);
+
+    const addedExerciseIds = new Set(
+        sessionExercises.map(
+            (exercise) => exercise.exercise_id
+        )
+    );
+
     exerciseList.replaceChildren();
 
     for (const exercise of exercises) {
@@ -121,26 +130,29 @@ async function loadExercises() {
 
         exerciseButton.textContent = exercise.name;
 
-        exerciseButton.addEventListener("click", async () => {
-            const sessionExercises =
-                await getSessionExercises(activeSession.id);
+        if (addedExerciseIds.has(exercise.id)) {
+            exerciseButton.disabled = true;
+            exerciseButton.textContent += " (Already in workout)";
+        } else {
+            exerciseButton.addEventListener("click", async () => {
+                const position = sessionExercises.length + 1;
 
-            const position = sessionExercises.length + 1;
+                await addExerciseToSession(
+                    activeSession.id,
+                    exercise.id,
+                    position
+                );
 
-            await addExerciseToSession(
-                activeSession.id,
-                exercise.id,
-                position
-            );
+                activeSessionExercises.push(exercise);
 
-            activeSessionExercises.push(exercise);
+                const exerciseCard =
+                    createExerciseCard(exercise);
 
-            const exerciseCard = createExerciseCard(exercise);
+                activeExercises.prepend(exerciseCard);
 
-            activeExercises.prepend(exerciseCard);
-
-            showScreen(activeWorkout);
-        });
+                showScreen(activeWorkout);
+            });
+        }
 
         exerciseList.appendChild(exerciseButton);
     }
@@ -280,9 +292,65 @@ async function saveSet(
 
     console.log("Saved set:", set);
 
+    for (const input of inputs) {
+        input.disabled = true;
+    }
+
     row.classList.add("completed");
+
+    const actionCell = row.lastElementChild;
+
+    actionCell.replaceChildren(
+        createEditButton(
+            row,
+            exercise,
+            set,
+            inputs,
+            actionCell,
+        ),
+        createDeleteButton(set.id, row),
+    );
 }
 
+async function saveEditedSet(
+    row,
+    exercise,
+    set,
+    inputs,
+    actionCell,
+) {
+    const setData = buildSetData(
+        exercise,
+        set.set_number,
+        inputs,
+    );
+
+    if (!setData) {
+        return;
+    }
+
+    const updatedSet = await updateExerciseSet(
+        set.id,
+        setData,
+    );
+
+    for (const input of inputs) {
+        input.disabled = true;
+    }
+
+    row.classList.add("completed");
+
+    actionCell.replaceChildren(
+        createEditButton(
+            row,
+            exercise,
+            updatedSet,
+            inputs,
+            actionCell,
+        ),
+        createDeleteButton(updatedSet.id, row),
+    );
+}
 
 function buildSetData(exercise, setNumber, inputs) {
     if (exercise.exercise_type === "weighted") {
@@ -362,6 +430,23 @@ function addSavedSetRow(table, exercise, set) {
         inputCell.appendChild(input);
     }
 
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+
+    editButton.addEventListener("click", () => {
+        editSet(row, exercise, set, inputs, actionCell);
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+
+    deleteButton.addEventListener("click", async () => {
+        await deleteSet(set.id, row);
+    });
+
+    actionCell.appendChild(editButton);
+    actionCell.appendChild(deleteButton);
+
     row.classList.add("completed");
 
     row.appendChild(setCell);
@@ -370,6 +455,79 @@ function addSavedSetRow(table, exercise, set) {
 
     table.appendChild(row);
 }
+
+async function deleteSet(setId, row) {
+    await deleteExerciseSet(setId);
+
+    row.remove();
+}
+
+function editSet(row, exercise, set, inputs, actionCell) {
+    for (const input of inputs) {
+        input.disabled = false;
+    }
+
+    row.classList.remove("completed");
+
+    actionCell.replaceChildren();
+
+    const saveButton = document.createElement("button");
+    saveButton.textContent = "Save";
+
+    saveButton.addEventListener("click", async () => {
+        await saveEditedSet(
+            row,
+            exercise,
+            set,
+            inputs,
+            actionCell,
+        );
+    });
+
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Cancel";
+
+    cancelButton.addEventListener("click", () => {
+        for (const input of inputs) {
+            input.disabled = true;
+        }
+
+        row.classList.add("completed");
+
+        actionCell.replaceChildren(
+            createEditButton(row, exercise, set, inputs, actionCell),
+            createDeleteButton(set.id, row),
+        );
+    });
+
+    actionCell.appendChild(saveButton);
+    actionCell.appendChild(cancelButton);
+}
+
+
+function createEditButton(row, exercise, set, inputs, actionCell) {
+    const button = document.createElement("button");
+    button.textContent = "Edit";
+
+    button.addEventListener("click", () => {
+        editSet(row, exercise, set, inputs, actionCell);
+    });
+
+    return button;
+}
+
+
+function createDeleteButton(setId, row) {
+    const button = document.createElement("button");
+    button.textContent = "Delete";
+
+    button.addEventListener("click", async () => {
+        await deleteSet(setId, row);
+    });
+
+    return button;
+}
+
 
 // input helpers
 

@@ -132,3 +132,8 @@ input {
     margin: 0 0 12px;
     color: #666;
 }
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
