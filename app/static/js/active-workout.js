@@ -46,7 +46,7 @@ async function loadExercises() {
 
             const exerciseCard = createExerciseCard(exercise);
 
-            activeExercises.appendChild(exerciseCard);
+            activeExercises.prepend(exerciseCard);
 
             showScreen(activeWorkout);
         });

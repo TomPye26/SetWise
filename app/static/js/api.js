@@ -37,6 +37,10 @@ async function addExerciseToSession(sessionId, exerciseId, position) {
         }
     );
 
+    if (!response.ok) {
+        throw new Error("Failed to add exercise");
+    }
+
     return await response.json();
 }
 
