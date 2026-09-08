@@ -53,3 +53,4 @@ let activeSessionExercises = [];
 
 initialiseStartWorkout();
 initialiseActiveWorkout();
+restoreActiveWorkout();

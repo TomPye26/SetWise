@@ -132,3 +132,28 @@ def delete_workout_session(
     db.commit()
 
     return {"message": "Workout session deleted successfully"}
+
+
+@router.get(
+    "/user/{user_id}/active",
+    response_model=WorkoutSessionResponse,
+)
+def get_active_workout_session(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    session = db.scalar(
+        select(WorkoutSession)
+        .where(
+            WorkoutSession.user_id == user_id,
+            WorkoutSession.completed_at.is_(None),
+        )
+    )
+
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No active workout found",
+        )
+
+    return session

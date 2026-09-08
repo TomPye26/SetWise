@@ -78,3 +78,28 @@ async function getSessionSets(sessionId) {
 
     return await response.json();
 }
+
+
+async function getActiveWorkoutSession(userId) {
+    const response = await fetch(
+        `/api/workout-sessions/user/${userId}/active`
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to get active workout");
+    }
+
+    return await response.json();
+}
+
+async function getSessionSets(sessionId) {
+    const response = await fetch(
+        `/api/exercise-sets/session/${sessionId}`
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to get session sets");
+    }
+
+    return await response.json();
+}

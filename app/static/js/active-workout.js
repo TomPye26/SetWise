@@ -17,6 +17,61 @@ function initialiseActiveWorkout() {
     });
 }
 
+// restore active workout
+
+async function restoreActiveWorkout() {
+    try {
+        const session = await getActiveWorkoutSession(1);
+
+        activeSession = session;
+
+        activeWorkoutLabel.textContent =
+            session.label || "Workout";
+
+        await restoreSessionExercises();
+
+        showScreen(activeWorkout);
+    } catch (error) {
+        console.error("Failed to restore active workout:", error);
+    }
+}
+async function restoreSessionExercises() {
+    const sessionExercises =
+        await getSessionExercises(activeSession.id);
+
+    const sets =
+        await getSessionSets(activeSession.id);
+
+    const exercises = await getExercises();
+
+    activeSessionExercises = [];
+
+    activeExercises.replaceChildren();
+
+    for (const sessionExercise of sessionExercises) {
+        const exercise = exercises.find(
+            (exercise) => exercise.id === sessionExercise.exercise_id
+        );
+
+        if (!exercise) {
+            continue;
+        }
+
+        const exerciseSets = sets.filter(
+            (set) => set.exercise_id === exercise.id
+        );
+
+        activeSessionExercises.push(exercise);
+
+        const exerciseCard = createExerciseCard(
+            exercise,
+            exerciseSets,
+        );
+
+        activeExercises.prepend(exerciseCard);
+    }
+}
+
 
 // exercise management
 
@@ -58,7 +113,7 @@ async function loadExercises() {
 
 // exercise card UI
 
-function createExerciseCard(exercise) {
+function createExerciseCard(exercise, savedSets = []) {
     const card = document.createElement("div");
     card.classList.add("exercise-card");
 
@@ -83,6 +138,9 @@ function createExerciseCard(exercise) {
     header.appendChild(actionHeader);
 
     table.appendChild(header);
+    for (const set of savedSets) {
+        addSavedSetRow(table, exercise, set);
+    }
 
     const addSetButton = document.createElement("button");
     addSetButton.textContent = "+ Add Set";
@@ -252,6 +310,30 @@ function buildSetData(exercise, setNumber, inputs) {
     return null;
 }
 
+function addSavedSetRow(table, exercise, set) {
+    const row = document.createElement("tr");
+
+    const setCell = document.createElement("td");
+    setCell.textContent = set.set_number;
+
+    const inputCell = document.createElement("td");
+
+    const actionCell = document.createElement("td");
+
+    const inputs = createInputValues(exercise, set);
+
+    for (const input of inputs) {
+        inputCell.appendChild(input);
+    }
+
+    row.classList.add("completed");
+
+    row.appendChild(setCell);
+    row.appendChild(inputCell);
+    row.appendChild(actionCell);
+
+    table.appendChild(row);
+}
 
 // input helpers
 
@@ -297,4 +379,50 @@ function createInput(type, placeholder, min, step) {
     input.step = step;
 
     return input;
+}
+
+function createInputValues(exercise, set) {
+    const inputs = [];
+
+    if (exercise.exercise_type === "weighted") {
+        inputs.push(
+            createInput("number", "kg", "0", "0.5"),
+            createInput("number", "reps", "1", "1"),
+        );
+
+        inputs[0].value = set.weight;
+        inputs[1].value = set.reps;
+    }
+
+    if (exercise.exercise_type === "bodyweight") {
+        inputs.push(
+            createInput("number", "reps", "1", "1"),
+        );
+
+        inputs[0].value = set.reps;
+    }
+
+    if (exercise.exercise_type === "assisted") {
+        inputs.push(
+            createInput("number", "assistance kg", "0", "0.5"),
+            createInput("number", "reps", "1", "1"),
+        );
+
+        inputs[0].value = set.assistance_weight;
+        inputs[1].value = set.reps;
+    }
+
+    if (exercise.exercise_type === "duration") {
+        inputs.push(
+            createInput("number", "seconds", "1", "1"),
+        );
+
+        inputs[0].value = set.duration_seconds;
+    }
+
+    for (const input of inputs) {
+        input.disabled = true;
+    }
+
+    return inputs;
 }
