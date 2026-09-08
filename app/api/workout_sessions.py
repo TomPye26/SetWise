@@ -5,7 +5,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
-from app.models import User, Workout, WorkoutSession
+from app.models import (
+    ExerciseSet,
+    User,
+    Workout,
+    WorkoutSession,
+    WorkoutSessionExercise,
+)
 from app.schemas import (
     WorkoutSessionCreate,
     WorkoutSessionResponse,
@@ -128,10 +134,25 @@ def delete_workout_session(
             detail="Workout session not found",
         )
 
+    # remove all sets from this session
+    db.query(ExerciseSet).filter(
+        ExerciseSet.session_id == session_id
+    ).delete()
+
+    # remove all exercises from this session
+    db.query(WorkoutSessionExercise).filter(
+        WorkoutSessionExercise.session_id == session_id
+    ).delete()
+
+    # remove the workout session
     db.delete(session)
+
+    # save all deletions together
     db.commit()
 
-    return {"message": "Workout session deleted successfully"}
+    return {
+        "message": "Workout session deleted successfully"
+    }
 
 
 @router.get(

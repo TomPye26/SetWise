@@ -67,16 +67,40 @@ function createWorkoutCard(session, isActive) {
         const continueButton = document.createElement("button");
         continueButton.textContent = "Continue";
 
-    continueButton.addEventListener("click", async () => {
-        await openWorkoutSession(session);
-    });
+        continueButton.addEventListener("click", async () => {
+            await openWorkoutSession(session);
+        });
 
         card.appendChild(continueButton);
     }
 
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+
+    deleteButton.addEventListener("click", async () => {
+        await deleteWorkout(session.id, card);
+    });
+
+    card.appendChild(deleteButton);
+
     return card;
 }
 
+
+async function deleteWorkout(sessionId, card) {
+    const confirmed = confirm(
+        "Delete this workout? " +
+        "All exercises and sets recorded in this workout will be deleted."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await deleteWorkoutSession(sessionId);
+
+    card.remove();
+}
 
 function formatWorkoutDate(dateString) {
     const date = new Date(dateString);

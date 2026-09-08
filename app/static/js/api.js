@@ -190,3 +190,16 @@ async function removeExerciseFromSession(sessionId, exerciseId) {
         throw new Error("Failed to remove exercise");
     }
 }
+
+async function deleteWorkoutSession(sessionId) {
+    const response = await fetch(
+        `/api/workout-sessions/${sessionId}`,
+        {
+            method: "DELETE",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to delete workout");
+    }
+}
