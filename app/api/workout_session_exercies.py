@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
 from app.models import Exercise, WorkoutSession, WorkoutSessionExercise
+from app.models import ExerciseSet, WorkoutSessionExercise
 from app.schemas.workout_session_exercise import (
     WorkoutSessionExerciseCreate,
     WorkoutSessionExerciseResponse,
@@ -91,14 +92,14 @@ def add_session_exercise(
 
 
 @router.delete(
-    "/session/{session_id}/{exercise_id}",
-    status_code=204,
+    "/session/{session_id}/{exercise_id}"
 )
 def remove_session_exercise(
     session_id: int,
     exercise_id: int,
     db: Session = Depends(get_db),
 ):
+    # find the exercise in this session
     session_exercise = db.get(
         WorkoutSessionExercise,
         (session_id, exercise_id),
@@ -110,5 +111,18 @@ def remove_session_exercise(
             detail="Exercise not found in workout session",
         )
 
+    # remove all sets recorded for this exercise
+    db.query(ExerciseSet).filter(
+        ExerciseSet.session_id == session_id,
+        ExerciseSet.exercise_id == exercise_id,
+    ).delete()
+
+    # remove the exercise from the session
     db.delete(session_exercise)
+
+    # save both deletions together
     db.commit()
+
+    return {
+        "message": "Exercise removed from workout session"
+    }

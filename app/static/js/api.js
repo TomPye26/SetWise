@@ -177,3 +177,16 @@ async function updateExerciseSet(setId, setData) {
 
     return await response.json();
 }
+
+async function removeExerciseFromSession(sessionId, exerciseId) {
+    const response = await fetch(
+        `/api/workout-session-exercises/session/${sessionId}/${exerciseId}`,
+        {
+            method: "DELETE",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to remove exercise");
+    }
+}

@@ -158,6 +158,40 @@ async function loadExercises() {
     }
 }
 
+async function deleteExerciseFromWorkout(
+    exerciseId,
+    card,
+) {
+    const sets = await getSessionSets(activeSession.id);
+
+    const exerciseSets = sets.filter(
+        (set) => set.exercise_id === exerciseId
+    );
+
+    if (exerciseSets.length > 0) {
+        const confirmed = confirm(
+            "This exercise has recorded sets. " +
+            "Delete the exercise and its sets?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+    }
+
+    await removeExerciseFromSession(
+        activeSession.id,
+        exerciseId,
+    );
+
+    activeSessionExercises =
+        activeSessionExercises.filter(
+            (exercise) => exercise.id !== exerciseId
+        );
+
+    card.remove();
+}
+
 
 // exercise card UI
 
@@ -197,9 +231,22 @@ function createExerciseCard(exercise, savedSets = []) {
         addSetRow(table, exercise);
     });
 
+
+    const deleteExerciseButton = document.createElement("button");
+    deleteExerciseButton.textContent = "Delete Exercise";
+
+    deleteExerciseButton.addEventListener("click", async () => {
+        await deleteExerciseFromWorkout(
+            exercise.id,
+            card,
+        );
+    });
+
+
     card.appendChild(title);
     card.appendChild(table);
     card.appendChild(addSetButton);
+    card.appendChild(deleteExerciseButton);
 
     return card;
 }
