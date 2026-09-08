@@ -1,4 +1,25 @@
 
+// initialise active workout
+
+function initialiseActiveWorkout() {
+    activeBackButton.addEventListener("click", () => {
+        showScreen(home);
+    });
+
+    addExerciseButton.addEventListener("click", async () => {
+        await loadExercises();
+
+        showScreen(exercisePicker);
+    });
+
+    exercisePickerBackButton.addEventListener("click", () => {
+        showScreen(activeWorkout);
+    });
+}
+
+
+// exercise management
+
 async function loadExercises() {
     const exercises = await getExercises();
 
@@ -21,9 +42,13 @@ async function loadExercises() {
                 position
             );
 
-            showScreen(activeWorkout);
+            activeSessionExercises.push(exercise);
 
-            await loadSessionExercises();
+            const exerciseCard = createExerciseCard(exercise);
+
+            activeExercises.appendChild(exerciseCard);
+
+            showScreen(activeWorkout);
         });
 
         exerciseList.appendChild(exerciseButton);
@@ -31,29 +56,7 @@ async function loadExercises() {
 }
 
 
-async function loadSessionExercises() {
-    const sessionExercises =
-        await getSessionExercises(activeSession.id);
-
-    const exercises = await getExercises();
-
-    activeExercises.replaceChildren();
-
-    for (const sessionExercise of sessionExercises) {
-        const exercise = exercises.find(
-            (exercise) => exercise.id === sessionExercise.exercise_id
-        );
-
-        if (!exercise) {
-            continue;
-        }
-
-        const exerciseCard = createExerciseCard(exercise);
-
-        activeExercises.appendChild(exerciseCard);
-    }
-}
-
+// exercise card UI
 
 function createExerciseCard(exercise) {
     const card = document.createElement("div");
@@ -69,15 +72,15 @@ function createExerciseCard(exercise) {
     const setHeader = document.createElement("th");
     setHeader.textContent = "Set";
 
-    const weightHeader = document.createElement("th");
-    weightHeader.textContent = "Weight";
+    const inputHeader = document.createElement("th");
+    inputHeader.textContent = getInputHeader(exercise);
 
-    const repsHeader = document.createElement("th");
-    repsHeader.textContent = "Reps";
+    const actionHeader = document.createElement("th");
+    actionHeader.textContent = "";
 
     header.appendChild(setHeader);
-    header.appendChild(weightHeader);
-    header.appendChild(repsHeader);
+    header.appendChild(inputHeader);
+    header.appendChild(actionHeader);
 
     table.appendChild(header);
 
@@ -96,33 +99,28 @@ function createExerciseCard(exercise) {
 }
 
 
-async function saveSet(
-    exerciseId,
-    setNumber,
-    weight,
-    reps,
-    row,
-) {
-    if (!weight || !reps) {
-        return;
+function getInputHeader(exercise) {
+    if (exercise.exercise_type === "weighted") {
+        return "Weight / Reps";
     }
 
-    const set = await addExerciseSet(
-        activeSession.id,
-        exerciseId,
-        {
-            set_number: setNumber,
-            weight: Number(weight),
-            weight_unit: "kg",
-            reps: Number(reps),
-        },
-    );
+    if (exercise.exercise_type === "bodyweight") {
+        return "Reps";
+    }
 
-    console.log("Saved set:", set);
+    if (exercise.exercise_type === "assisted") {
+        return "Assistance / Reps";
+    }
 
-    row.classList.add("completed");
+    if (exercise.exercise_type === "duration") {
+        return "Duration";
+    }
+
+    return "Value";
 }
 
+
+// set management
 
 function addSetRow(table, exercise) {
     const setNumber = table.rows.length;
@@ -132,36 +130,24 @@ function addSetRow(table, exercise) {
     const setCell = document.createElement("td");
     setCell.textContent = setNumber;
 
-    const weightCell = document.createElement("td");
-    const weightInput = document.createElement("input");
-
-    weightInput.type = "number";
-    weightInput.placeholder = "kg";
-    weightInput.min = "0";
-    weightInput.step = "0.5";
-
-    weightCell.appendChild(weightInput);
-
-    const repsCell = document.createElement("td");
-    const repsInput = document.createElement("input");
-
-    repsInput.type = "number";
-    repsInput.placeholder = "reps";
-    repsInput.min = "1";
-
-    repsCell.appendChild(repsInput);
+    const inputCell = document.createElement("td");
 
     const actionCell = document.createElement("td");
-    const saveButton = document.createElement("button");
 
-    saveButton.textContent = "✓";
+    const saveButton = document.createElement("button");
+    saveButton.textContent = "Add";
+
+    const inputs = createSetInputs(exercise);
+
+    for (const input of inputs) {
+        inputCell.appendChild(input);
+    }
 
     saveButton.addEventListener("click", async () => {
         await saveSet(
-            exercise.id,
+            exercise,
             setNumber,
-            weightInput.value,
-            repsInput.value,
+            inputs,
             row,
         );
     });
@@ -169,28 +155,146 @@ function addSetRow(table, exercise) {
     actionCell.appendChild(saveButton);
 
     row.appendChild(setCell);
-    row.appendChild(weightCell);
-    row.appendChild(repsCell);
+    row.appendChild(inputCell);
     row.appendChild(actionCell);
 
     table.appendChild(row);
 }
 
 
-function initialiseActiveWorkout() {
-    activeBackButton.addEventListener("click", () => {
-        showScreen(home);
-    });
+async function saveSet(
+    exercise,
+    setNumber,
+    inputs,
+    row,
+) {
+    const setData = buildSetData(
+        exercise,
+        setNumber,
+        inputs,
+    );
+
+    if (!setData) {
+        return;
+    }
+
+    const set = await addExerciseSet(
+        activeSession.id,
+        exercise.id,
+        setData,
+    );
+
+    console.log("Saved set:", set);
+
+    row.classList.add("completed");
+}
 
 
-    addExerciseButton.addEventListener("click", async () => {
-        await loadExercises();
+function buildSetData(exercise, setNumber, inputs) {
+    if (exercise.exercise_type === "weighted") {
+        const weight = inputs[0].value;
+        const reps = inputs[1].value;
 
-        showScreen(exercisePicker);
-    });
+        if (!weight || !reps) {
+            return null;
+        }
+
+        return {
+            set_number: setNumber,
+            weight: Number(weight),
+            weight_unit: "kg",
+            reps: Number(reps),
+        };
+    }
+
+    if (exercise.exercise_type === "bodyweight") {
+        const reps = inputs[0].value;
+
+        if (!reps) {
+            return null;
+        }
+
+        return {
+            set_number: setNumber,
+            reps: Number(reps),
+        };
+    }
+
+    if (exercise.exercise_type === "assisted") {
+        const assistanceWeight = inputs[0].value;
+        const reps = inputs[1].value;
+
+        if (!assistanceWeight || !reps) {
+            return null;
+        }
+
+        return {
+            set_number: setNumber,
+            assistance_weight: Number(assistanceWeight),
+            assistance_weight_unit: "kg",
+            reps: Number(reps),
+        };
+    }
+
+    if (exercise.exercise_type === "duration") {
+        const duration = inputs[0].value;
+
+        if (!duration) {
+            return null;
+        }
+
+        return {
+            set_number: setNumber,
+            duration_seconds: Number(duration),
+        };
+    }
+
+    return null;
+}
 
 
-    exercisePickerBackButton.addEventListener("click", () => {
-        showScreen(activeWorkout);
-    });
+// input helpers
+
+function createSetInputs(exercise) {
+    const inputs = [];
+
+    if (exercise.exercise_type === "weighted") {
+        inputs.push(
+            createInput("number", "kg", "0", "0.5"),
+            createInput("number", "reps", "1", "1"),
+        );
+    }
+
+    if (exercise.exercise_type === "bodyweight") {
+        inputs.push(
+            createInput("number", "reps", "1", "1"),
+        );
+    }
+
+    if (exercise.exercise_type === "assisted") {
+        inputs.push(
+            createInput("number", "assistance kg", "0", "0.5"),
+            createInput("number", "reps", "1", "1"),
+        );
+    }
+
+    if (exercise.exercise_type === "duration") {
+        inputs.push(
+            createInput("number", "seconds", "1", "1"),
+        );
+    }
+
+    return inputs;
+}
+
+
+function createInput(type, placeholder, min, step) {
+    const input = document.createElement("input");
+
+    input.type = type;
+    input.placeholder = placeholder;
+    input.min = min;
+    input.step = step;
+
+    return input;
 }

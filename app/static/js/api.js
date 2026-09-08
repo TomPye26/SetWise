@@ -66,3 +66,11 @@ async function addExerciseSet(sessionId, exerciseId, setData) {
 
     return await response.json();
 }
+
+async function getSessionSets(sessionId) {
+    const response = await fetch(
+        `/api/exercise-sets/session/${sessionId}`
+    );
+
+    return await response.json();
+}

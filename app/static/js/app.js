@@ -46,6 +46,7 @@ const activeExercises =
 // app state
 
 let activeSession = null;
+let activeSessionExercises = [];
 
 
 // initialise app

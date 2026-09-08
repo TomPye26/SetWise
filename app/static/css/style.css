@@ -106,3 +106,12 @@ input {
 .exercise-card tr.completed {
     opacity: 0.6;
 }
+
+.exercise-card td:nth-child(2) {
+    display: flex;
+    gap: 8px;
+}
+
+.exercise-card td:nth-child(2) input {
+    flex: 1;
+}

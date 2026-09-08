@@ -50,8 +50,12 @@ function initialiseStartWorkout() {
 
         activeSession = session;
 
+        activeSessionExercises = [];
+        activeExercises.replaceChildren();
+
         activeWorkoutLabel.textContent =
             session.label || "Workout";
+
 
         showScreen(activeWorkout);
 

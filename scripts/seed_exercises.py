@@ -90,7 +90,7 @@ EXERCISES = [
     {
         "name": "Barbell Curl",
         "muscle_group": "biceps",
-        "exercise_type": ExerciseType.WEIGHTED,
+        "exercise_type": ExerciseType.WEIGHTED
     },
     {
         "name": "Dumbbell Curl",
