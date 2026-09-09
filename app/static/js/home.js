@@ -75,6 +75,15 @@ function createWorkoutCard(session, isActive) {
             `${session.set_count} sets`;
 
         card.appendChild(summary);
+
+        const viewButton = document.createElement("button");
+        viewButton.textContent = "View Workout";
+
+        viewButton.addEventListener("click", async () => {
+            await openWorkoutDetails(session);
+        });
+
+        card.appendChild(viewButton);
     }
 
     if (isActive) {

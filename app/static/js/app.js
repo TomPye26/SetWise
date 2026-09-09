@@ -48,11 +48,27 @@ const activeExercises =
 const finishWorkoutButton =
     document.getElementById("finish-workout-button");
 
+const workoutDetails =
+    document.getElementById("workout-details");
+
+const workoutDetailsBackButton =
+    document.getElementById("workout-details-back-button");
+
+const workoutDetailsTitle =
+    document.getElementById("workout-details-title");
+
+const workoutDetailsTime =
+    document.getElementById("workout-details-time");
+
+const workoutDetailsExercises =
+    document.getElementById("workout-details-exercises");
+
 
 // app state
 
 let activeSession = null;
 let activeSessionExercises = [];
+let viewingWorkout = null;
 
 
 // initialise app
@@ -60,4 +76,4 @@ let activeSessionExercises = [];
 initialiseHome();
 initialiseStartWorkout();
 initialiseActiveWorkout();
-// restoreActiveWorkout();
+initialiseWorkoutDetails();
