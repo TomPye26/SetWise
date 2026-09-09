@@ -58,10 +58,17 @@ function createWorkoutCard(session, isActive) {
     title.textContent = session.label || "Workout";
 
     const date = document.createElement("p");
-    date.textContent = formatWorkoutDate(session.started_at);
+    date.textContent = formatWorkoutTime(session);
 
     card.appendChild(title);
     card.appendChild(date);
+
+    if (!isActive) {
+        const duration = document.createElement("p");
+        duration.textContent = formatWorkoutDuration(session);
+
+        card.appendChild(duration);
+    }
 
     if (isActive) {
         const continueButton = document.createElement("button");
@@ -78,7 +85,7 @@ function createWorkoutCard(session, isActive) {
     deleteButton.textContent = "Delete";
 
     deleteButton.addEventListener("click", async () => {
-        await deleteWorkout(session.id, card);
+        await deleteWorkout(session.id);
     });
 
     card.appendChild(deleteButton);
@@ -86,8 +93,59 @@ function createWorkoutCard(session, isActive) {
     return card;
 }
 
+function formatWorkoutTime(session) {
+    const start = new Date(session.started_at);
 
-async function deleteWorkout(sessionId, card) {
+    const date = start.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    });
+
+    const startTime = start.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+    if (!session.completed_at) {
+        return `${date} · Started ${startTime}`;
+    }
+
+    const end = new Date(session.completed_at);
+
+    const endTime = end.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+    return `${date} · ${startTime}–${endTime}`;
+}
+
+
+function formatWorkoutDuration(session) {
+    const start = new Date(session.started_at);
+    const end = new Date(session.completed_at);
+
+    const durationMinutes = Math.round(
+        (end - start) / 60000
+    );
+
+    if (durationMinutes < 60) {
+        return `${durationMinutes} min`;
+    }
+
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+
+    if (minutes === 0) {
+        return `${hours} hr`;
+    }
+
+    return `${hours} hr ${minutes} min`;
+}
+
+
+async function deleteWorkout(sessionId) {
     const confirmed = confirm(
         "Delete this workout? " +
         "All exercises and sets recorded in this workout will be deleted."
@@ -99,7 +157,7 @@ async function deleteWorkout(sessionId, card) {
 
     await deleteWorkoutSession(sessionId);
 
-    card.remove();
+    await loadWorkoutHistory();
 }
 
 function formatWorkoutDate(dateString) {
