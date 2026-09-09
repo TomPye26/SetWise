@@ -68,6 +68,13 @@ function createWorkoutCard(session, isActive) {
         duration.textContent = formatWorkoutDuration(session);
 
         card.appendChild(duration);
+
+        const summary = document.createElement("p");
+        summary.textContent =
+            `${session.exercise_count} exercises · ` +
+            `${session.set_count} sets`;
+
+        card.appendChild(summary);
     }
 
     if (isActive) {

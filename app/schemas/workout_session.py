@@ -25,3 +25,15 @@ class WorkoutSessionResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# for historical sessions
+class WorkoutSessionHistoryResponse(BaseModel):
+    id: int
+    user_id: int
+    workout_id: int | None
+    label: str | None
+    started_at: datetime
+    completed_at: datetime | None
+    exercise_count: int
+    set_count: int
+
+    model_config = {"from_attributes": True}

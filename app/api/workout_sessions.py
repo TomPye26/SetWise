@@ -15,6 +15,7 @@ from app.models import (
 from app.schemas import (
     WorkoutSessionCreate,
     WorkoutSessionResponse,
+    WorkoutSessionHistoryResponse,
     WorkoutSessionUpdate,
 )
 
@@ -181,7 +182,7 @@ def get_active_workout_session(
 
 @router.get(
     "/user/{user_id}",
-    response_model=list[WorkoutSessionResponse],
+    response_model=list[WorkoutSessionHistoryResponse],
 )
 def get_user_workout_sessions(
     user_id: int,
@@ -195,10 +196,38 @@ def get_user_workout_sessions(
             detail="User not found",
         )
 
-    all_workout_sessions = db.scalars(
+    sessions = db.scalars(
         select(WorkoutSession)
         .where(WorkoutSession.user_id == user_id)
         .order_by(WorkoutSession.started_at.desc())
     ).all()
 
-    return all_workout_sessions
+    results = []
+
+    for session in sessions:
+        exercise_count = db.query(
+            WorkoutSessionExercise
+        ).filter(
+            WorkoutSessionExercise.session_id == session.id
+        ).count()
+
+        set_count = db.query(
+            ExerciseSet
+        ).filter(
+            ExerciseSet.session_id == session.id
+        ).count()
+
+        results.append(
+            WorkoutSessionHistoryResponse(
+                id=session.id,
+                user_id=session.user_id,
+                workout_id=session.workout_id,
+                label=session.label,
+                started_at=session.started_at,
+                completed_at=session.completed_at,
+                exercise_count=exercise_count,
+                set_count=set_count,
+            )
+        )
+
+    return results

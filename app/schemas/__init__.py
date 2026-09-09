@@ -20,6 +20,7 @@ from app.schemas.workout_exercise import (
 from app.schemas.workout_session import (
     WorkoutSessionCreate,
     WorkoutSessionResponse,
+    WorkoutSessionHistoryResponse,
     WorkoutSessionUpdate,
 )
 from app.schemas.exercise_sets import (
@@ -50,6 +51,7 @@ __all__ = [
 
     "WorkoutSessionCreate",
     "WorkoutSessionResponse",
+    "WorkoutSessionHistoryResponse",
     "WorkoutSessionUpdate",
 
     "ExerciseSetCreate",
