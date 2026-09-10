@@ -1,27 +1,25 @@
 
 // initialise active workout
 
+let availableExercises = [];
+
 function initialiseActiveWorkout() {
-
-    activeBackButton.addEventListener("click", async () => {
-        await loadWorkoutHistory();
-
+    activeBackButton.addEventListener("click", () => {
+        loadWorkoutHistory();
         showScreen(home);
     });
 
-    addExerciseButton.addEventListener("click", async () => {
-        await loadExercises();
-
-        showScreen(exercisePicker);
+    addExerciseButton.addEventListener("click", () => {
+        loadExercises();
     });
 
     exercisePickerBackButton.addEventListener("click", () => {
         showScreen(activeWorkout);
     });
 
-    finishWorkoutButton.addEventListener("click", async () => {
-        await finishWorkout();
-    });
+    exerciseSearch.addEventListener("input", renderExerciseList);
+
+    finishWorkoutButton.addEventListener("click", finishWorkout);
 }
 
 // restore active workout
@@ -112,53 +110,89 @@ async function finishWorkout() {
 }
 
 // exercise management
-
 async function loadExercises() {
     const exercises = await getExercises();
-
-    const sessionExercises =
-        await getSessionExercises(activeSession.id);
+    const sessionExercises = await getSessionExercises(activeSession.id);
 
     const addedExerciseIds = new Set(
-        sessionExercises.map(
-            (exercise) => exercise.exercise_id
-        )
+        sessionExercises.map(exercise => exercise.exercise_id)
     );
+
+    availableExercises = exercises.map(exercise => ({
+        ...exercise,
+        added: addedExerciseIds.has(exercise.id),
+    }));
+
+    exerciseSearch.value = "";
+    renderExerciseList();
+
+    showScreen(exercisePicker);
+}
+
+function renderExerciseList() {
+    const searchTerm = exerciseSearch.value.trim().toLowerCase();
 
     exerciseList.replaceChildren();
 
-    for (const exercise of exercises) {
-        const exerciseButton = document.createElement("button");
+    const filteredExercises = availableExercises.filter(exercise =>
+        exercise.name.toLowerCase().includes(searchTerm)
+    );
 
-        exerciseButton.textContent = exercise.name;
+    for (const exercise of filteredExercises) {
+        const row = document.createElement("div");
+        row.classList.add("exercise-picker-row");
 
-        if (addedExerciseIds.has(exercise.id)) {
-            exerciseButton.disabled = true;
-            exerciseButton.textContent += " (Already in workout)";
+        const info = document.createElement("div");
+
+        const name = document.createElement("div");
+        name.textContent = exercise.name;
+        name.classList.add("exercise-picker-name");
+
+        const details = document.createElement("div");
+        details.textContent =
+            `${exercise.muscle_group} · ${exercise.exercise_type}`;
+        details.classList.add("exercise-picker-details");
+
+        info.appendChild(name);
+        info.appendChild(details);
+
+        row.appendChild(info);
+
+        if (exercise.added) {
+            const added = document.createElement("span");
+            added.textContent = "Added";
+            added.classList.add("exercise-picker-added");
+            row.appendChild(added);
         } else {
-            exerciseButton.addEventListener("click", async () => {
-                const position = sessionExercises.length + 1;
-
-                await addExerciseToSession(
-                    activeSession.id,
-                    exercise.id,
-                    position
-                );
-
-                activeSessionExercises.push(exercise);
-
-                const exerciseCard =
-                    createExerciseCard(exercise);
-
-                activeExercises.prepend(exerciseCard);
-
-                showScreen(activeWorkout);
+            row.addEventListener("click", () => {
+                addExerciseToWorkout(exercise);
             });
         }
 
-        exerciseList.appendChild(exerciseButton);
+        exerciseList.appendChild(row);
     }
 }
+
+async function addExerciseToWorkout(exercise) {
+    const position = activeSessionExercises.length + 1;
+
+    await addExerciseToSession(
+        activeSession.id,
+        exercise.id,
+        position
+    );
+
+    activeSessionExercises.push(exercise);
+
+    exercise.added = true;
+
+    const exerciseCard = createExerciseCard(exercise);
+
+    activeExercises.appendChild(exerciseCard);
+
+    showScreen(activeWorkout);
+}
+
 
 async function deleteExerciseFromWorkout(
     exerciseId,

@@ -61,6 +61,8 @@ const exercisePickerBackButton =
 const exerciseList =
     document.getElementById("exercise-list");
 
+const exerciseSearch = document.getElementById("exercise-search");
+
 const activeExercises =
     document.getElementById("active-exercises");
 

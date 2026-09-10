@@ -111,15 +111,20 @@
         </div>
 
         <!-- exercise picker screen -->
-        <div id="exercise-picker" hidden>
-            <button id="exercise-picker-back-button">
-                ← Back
-            </button>
+        <section id="exercise-picker" hidden>
+            <button id="exercise-picker-back-button">Back</button>
 
             <h2>Add Exercise</h2>
 
+            <input
+                type="search"
+                id="exercise-search"
+                placeholder="Search exercises..."
+                autocomplete="off"
+            >
+
             <div id="exercise-list"></div>
-        </div>
+        </section>
 
         <!-- workout details screen -->
         <div id="workout-details" hidden>
