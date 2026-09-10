@@ -5,6 +5,7 @@ function showScreen(screen) {
     activeWorkout.hidden = true;
     exercisePicker.hidden = true;
     workoutDetails.hidden = true;
+    userScreen.hidden = true;
 
     screen.hidden = false;
 }

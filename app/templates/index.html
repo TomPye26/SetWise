@@ -12,6 +12,25 @@
     <main>
         <h1>SetWise</h1>
 
+        <!-- user screen -->
+        <div id="user-screen" hidden>
+            <h2>Who are you?</h2>
+
+            <div id="user-list"></div>
+
+            <h3>Create user</h3>
+
+            <input
+                id="username-input"
+                type="text"
+                placeholder="Username"
+            >
+
+            <button id="create-user-button">
+                Create User
+            </button>
+        </div>
+
         <!-- home screen -->
         <div id="home">
             <button id="start-workout-button">
@@ -113,6 +132,8 @@
 
     <script src="/static/js/api.js"></script>
     <script src="/static/js/navigation.js"></script>
+    <script src="/static/js/user-screen.js"></script>
+    <script src="/static/js/user.js"></script>
     <script src="/static/js/home.js"></script>
     <script src="/static/js/start-workout.js"></script>
     <script src="/static/js/active-workout.js"></script>

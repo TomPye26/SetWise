@@ -26,19 +26,21 @@ function initialiseActiveWorkout() {
 
 // restore active workout
 
-async function restoreActiveWorkout() {
-    try {
-        const session = await getActiveWorkoutSession(1);
+// async function restoreActiveWorkout() {
+//     try {
+//         const session = await getActiveWorkoutSession(
+//             currentUser.id
+//         );
 
-        if (!session) {
-            return;
-        }
+//         if (!session) {
+//             return;
+//         }
 
-        await openWorkoutSession(session);
-    } catch (error) {
-        console.error("Failed to restore active workout:", error);
-    }
-}
+//         await openWorkoutSession(session);
+//     } catch (error) {
+//         console.error("Failed to restore active workout:", error);
+//     }
+// }
 
 async function restoreSessionExercises() {
     const sessionExercises =

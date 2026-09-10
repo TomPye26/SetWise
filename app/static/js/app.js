@@ -6,10 +6,26 @@ const startWorkout = document.getElementById("start-workout");
 const activeWorkout = document.getElementById("active-workout");
 const exercisePicker = document.getElementById("exercise-picker");
 
+
+// users
+
+const userScreen =
+    document.getElementById("user-screen");
+
+const userList =
+    document.getElementById("user-list");
+
+const usernameInput =
+    document.getElementById("username-input");
+
+const createUserButton =
+    document.getElementById("create-user-button");
+
 const startWorkoutButton =
     document.getElementById("start-workout-button");
 
-const workouts =
+
+    const workouts =
     document.getElementById("workouts");
 
 const backButton =
@@ -72,8 +88,13 @@ let viewingWorkout = null;
 
 
 // initialise app
-
-initialiseHome();
+initialiseUser();
 initialiseStartWorkout();
 initialiseActiveWorkout();
 initialiseWorkoutDetails();
+
+if (currentUser) {
+    initialiseHome();
+} else {
+    initialiseUserScreen();
+}

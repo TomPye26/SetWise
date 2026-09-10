@@ -1,3 +1,36 @@
+
+// users
+
+async function getUsers() {
+    const response = await fetch("/api/users");
+
+    if (!response.ok) {
+        throw new Error("Failed to get users");
+    }
+
+    return await response.json();
+}
+
+
+async function createUser(username) {
+    const response = await fetch("/api/users/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            username: username,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create user");
+    }
+
+    return await response.json();
+}
+
+
 // workout sessions
 
 async function createWorkoutSession(label) {
@@ -7,7 +40,7 @@ async function createWorkoutSession(label) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            user_id: 1,
+            user_id: currentUser.id,
             label: label || null,
         }),
     });

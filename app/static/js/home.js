@@ -5,7 +5,9 @@ function initialiseHome() {
 
 
 async function loadWorkoutHistory() {
-    const sessions = await getWorkoutSessions(1);
+    const sessions = await getWorkoutSessions(
+        currentUser.id
+    );
 
     renderWorkoutHistory(sessions);
 }
