@@ -105,7 +105,7 @@ async function deleteWorkoutSession(sessionId) {
 // exercises
 
 async function getExercises() {
-    const response = await fetch("/api/exercises");
+    const response = await fetch("/api/exercises/");
 
     if (!response.ok) {
         throw new Error("Failed to get exercises");
