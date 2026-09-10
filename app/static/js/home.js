@@ -1,5 +1,7 @@
 
+
 function initialiseHome() {
+    currentUserDisplay.textContent = `User: ${currentUser.username}`;
     loadWorkoutHistory();
 }
 

@@ -24,8 +24,11 @@ const createUserButton =
 const startWorkoutButton =
     document.getElementById("start-workout-button");
 
+const currentUserDisplay = document.getElementById("current-user");
 
-    const workouts =
+const changeUserButton = document.getElementById("change-user-button");
+
+const workouts =
     document.getElementById("workouts");
 
 const backButton =
@@ -98,3 +101,8 @@ if (currentUser) {
 } else {
     initialiseUserScreen();
 }
+
+changeUserButton.addEventListener("click", () => {
+    clearCurrentUser();
+    initialiseUserScreen();
+});

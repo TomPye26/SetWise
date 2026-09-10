@@ -20,3 +20,8 @@ function setCurrentUser(user) {
         JSON.stringify(user),
     );
 }
+
+function clearCurrentUser() {
+    currentUser = null;
+    localStorage.removeItem("setwise_user");
+}

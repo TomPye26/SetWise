@@ -238,6 +238,22 @@ input:focus {
     color: #666;
 }
 
+.current-user {
+    margin-bottom: 1rem;
+}
+
+.current-user button {
+    width: auto;
+    min-height: auto;
+    padding: 0;
+    margin-left: 0.5rem;
+    border: none;
+    background: none;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 
 /* larger screens */
 
