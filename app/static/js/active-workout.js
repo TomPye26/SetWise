@@ -284,6 +284,7 @@ function addSetRow(table, exercise) {
     setCell.textContent = setNumber;
 
     const inputCell = document.createElement("td");
+    inputCell.classList.add("set-input-cell");
 
     const actionCell = document.createElement("td");
 
@@ -468,6 +469,7 @@ function addSavedSetRow(table, exercise, set) {
     setCell.textContent = set.set_number;
 
     const inputCell = document.createElement("td");
+    inputCell.classList.add("set-input-cell");
 
     const actionCell = document.createElement("td");
 

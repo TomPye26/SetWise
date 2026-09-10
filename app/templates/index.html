@@ -64,50 +64,52 @@
                 Start Workout
             </button>
         </div>
+
+
+        <!-- active workout screen -->
+        <div id="active-workout" hidden>
+            <button id="active-back-button">← Back</button>
+
+            <h2 id="active-workout-title">Workout</h2>
+
+            <p id="active-workout-label"></p>
+        
+            <button id="add-exercise-button">
+                + Add Exercise
+            </button>
+
+            <div id="active-exercises"></div>
+
+            <button id="finish-workout-button">
+                Finish Workout
+            </button>
+        </div>
+
+        <!-- exercise picker screen -->
+        <div id="exercise-picker" hidden>
+            <button id="exercise-picker-back-button">
+                ← Back
+            </button>
+
+            <h2>Add Exercise</h2>
+
+            <div id="exercise-list"></div>
+        </div>
+
+        <!-- workout details screen -->
+        <div id="workout-details" hidden>
+            <button id="workout-details-back-button">
+                ← Back
+            </button>
+
+            <h2 id="workout-details-title">Workout</h2>
+
+            <p id="workout-details-time"></p>
+
+            <div id="workout-details-exercises"></div>
+        </div>
+
     </main>
-
-    <!-- active workout screen -->
-    <div id="active-workout" hidden>
-        <button id="active-back-button">← Back</button>
-
-        <h2 id="active-workout-title">Workout</h2>
-
-        <p id="active-workout-label"></p>
-    
-        <button id="add-exercise-button">
-            + Add Exercise
-        </button>
-
-        <div id="active-exercises"></div>
-
-        <button id="finish-workout-button">
-            Finish Workout
-        </button>
-    </div>
-
-    <!-- exercise picker screen -->
-    <div id="exercise-picker" hidden>
-        <button id="exercise-picker-back-button">
-            ← Back
-        </button>
-
-        <h2>Add Exercise</h2>
-
-        <div id="exercise-list"></div>
-    </div>
-
-    <!-- workout details screen -->
-    <div id="workout-details" hidden>
-        <button id="workout-details-back-button">
-            ← Back
-        </button>
-
-        <h2 id="workout-details-title">Workout</h2>
-
-        <p id="workout-details-time"></p>
-
-        <div id="workout-details-exercises"></div>
-    </div>
 
     <script src="/static/js/api.js"></script>
     <script src="/static/js/navigation.js"></script>

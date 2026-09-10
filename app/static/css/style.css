@@ -6,30 +6,46 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #f5f5f5;
+    color: #222;
 }
 
 main {
     width: 100%;
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 24px 16px;
+    padding: 20px 16px 40px;
 }
 
 h1 {
-    margin-bottom: 24px;
+    margin: 0 0 24px;
+    font-size: 28px;
 }
 
 h2 {
-    margin-top: 32px;
+    margin: 28px 0 16px;
+    font-size: 22px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+button,
+input {
+    font: inherit;
 }
 
 button {
     width: 100%;
-    padding: 16px;
-    margin-bottom: 12px;
+    min-height: 48px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+
     border: 1px solid #ccc;
     border-radius: 8px;
+
     background: white;
+
     font-size: 16px;
     cursor: pointer;
 }
@@ -38,18 +54,39 @@ button:hover {
     border-color: #999;
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 input {
     width: 100%;
-    padding: 16px;
-    margin: 12px 0 20px;
+    min-height: 48px;
+    padding: 12px;
+
     border: 1px solid #ccc;
     border-radius: 8px;
+
+    background: white;
     font-size: 16px;
 }
 
+input:focus {
+    outline: 2px solid #999;
+    outline-offset: 1px;
+}
+
+
+/* labels */
+
 #labels {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+}
+
+#labels button {
+    margin-bottom: 0;
 }
 
 .label-button.selected {
@@ -57,21 +94,53 @@ input {
     background: #eee;
 }
 
-#custom-label {
-    margin-top: 4px;
+#custom-label-button {
+    margin-top: 12px;
 }
 
-.exercise-card {
-    margin-bottom: 24px;
+
+/* workout cards */
+
+.workout-card {
+    margin-bottom: 16px;
     padding: 16px;
+
     background: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 10px;
+}
+
+.workout-card h3 {
+    margin: 0 0 8px;
+}
+
+.workout-card p {
+    margin: 6px 0;
+    color: #666;
+}
+
+.workout-card button {
+    margin-top: 8px;
+}
+
+
+/* exercise cards */
+
+.exercise-card {
+    margin-bottom: 16px;
+    padding: 16px;
+
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
 }
 
 .exercise-card h3 {
-    margin-top: 0;
+    margin: 0 0 16px;
 }
+
+
+/* set tables */
 
 .exercise-card table {
     width: 100%;
@@ -81,59 +150,103 @@ input {
 
 .exercise-card th,
 .exercise-card td {
-    padding: 10px;
+    padding: 10px 8px;
     text-align: center;
     border-bottom: 1px solid #eee;
 }
 
+
+.exercise-card th {
+    font-size: 14px;
+    color: #666;
+}
+
 .exercise-card input {
-    width: 100%;
+    min-height: 40px;
     padding: 8px;
-    margin: 0;
     font-size: 14px;
 }
 
-.exercise-card td:last-child {
-    width: 50px;
+.set-input-cell {
+    display: flex;
+    gap: 6px;
 }
+
+.set-input-cell input {
+    flex: 1;
+}
+
 
 .exercise-card td:last-child button {
     width: auto;
-    padding: 8px 12px;
-    margin: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    margin: 0 0 4px;
+    font-size: 14px;
 }
 
 .exercise-card tr.completed {
     opacity: 0.6;
 }
 
+/* active workout table */
+
+.exercise-card th:first-child,
+.exercise-card td:first-child {
+    width: 15%;
+}
+
+.exercise-card th:nth-child(2),
 .exercise-card td:nth-child(2) {
-    display: flex;
-    gap: 8px;
+    width: auto;
 }
 
-.exercise-card td:nth-child(2) input {
-    flex: 1;
+.exercise-card th:last-child,
+.exercise-card td:last-child {
+    width: 90px;
 }
 
-.workout-card {
-    margin-bottom: 16px;
-    padding: 16px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+
+/* workout details table */
+
+#workout-details .exercise-card th:first-child,
+#workout-details .exercise-card td:first-child {
+    width: 20%;
 }
 
-.workout-card h3 {
-    margin: 0 0 8px;
+#workout-details .exercise-card th:last-child,
+#workout-details .exercise-card td:last-child {
+    width: 80%;
 }
 
-.workout-card p {
-    margin: 0 0 12px;
+/* active workout */
+
+#active-workout > button,
+#exercise-picker > button,
+#workout-details > button {
+    width: auto;
+    min-height: 40px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+
+/* workout details */
+
+#workout-details-time {
+    margin-bottom: 24px;
     color: #666;
 }
 
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+
+/* larger screens */
+
+@media (min-width: 600px) {
+    main {
+        padding: 32px 24px 48px;
+    }
+
+    #labels {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
