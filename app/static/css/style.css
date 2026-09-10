@@ -123,22 +123,47 @@ input:focus {
     margin-top: 8px;
 }
 
+.workout-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.workout-actions button {
+    flex: 1;
+}
 
 /* exercise cards */
 
 .exercise-card {
     margin-bottom: 16px;
-    padding: 16px;
 
     background: white;
     border: 1px solid #ddd;
     border-radius: 10px;
 }
 
-.exercise-card h3 {
-    margin: 0 0 16px;
+.exercise-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    cursor: pointer;
 }
 
+.exercise-card-header h3 {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.exercise-card-toggle {
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+.exercise-card-content {
+    padding: 0 16px 16px;
+}
 
 /* set tables */
 
@@ -153,8 +178,8 @@ input:focus {
     padding: 10px 8px;
     text-align: center;
     border-bottom: 1px solid #eee;
+    vertical-align: middle;
 }
-
 
 .exercise-card th {
     font-size: 14px;
@@ -165,29 +190,80 @@ input:focus {
     min-height: 40px;
     padding: 8px;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
 .set-input-cell {
     display: flex;
+    align-items: center;
     gap: 6px;
 }
 
 .set-input-cell input {
     flex: 1;
+    min-width: 0;
 }
 
+.exercise-card td:last-child {
+    vertical-align: middle;
+    white-space: nowrap;
+}
 
 .exercise-card td:last-child button {
     width: auto;
     min-height: 40px;
     padding: 8px 10px;
-    margin: 0 0 4px;
+    margin: 0 0 0 4px;
     font-size: 14px;
 }
 
-.exercise-card tr.completed {
-    opacity: 0.6;
+.exercise-card-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
+
+.exercise-card-button {
+    width: auto;
+    min-height: 32px;
+    padding: 6px 10px;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.exercise-card-add-set {
+    border-color: #bbb;
+    background: #f5f5f5;
+    font-weight: 500;
+}
+
+.exercise-card-delete {
+    color: #b33;
+    border-color: transparent;
+    background: transparent;
+}
+
+.exercise-card-delete:hover {
+    background: #fff0f0;
+}
+
+/* .exercise-card td:last-child button:last-child {
+    color: #777;
+} */
+
+.exercise-card-toggle {
+    margin-left: 4px;
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* .exercise-card tr.completed {
+    opacity: 0.6;
+} */
 
 /* active workout table */
 
@@ -281,6 +357,7 @@ input:focus {
 #exercise-search {
     margin-bottom: 1rem;
 }
+
 
 
 /* larger screens */

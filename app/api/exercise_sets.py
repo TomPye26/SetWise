@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -276,7 +277,38 @@ def delete_exercise_set(
             detail="Exercise set not found",
         )
 
+    session_id = exercise_set.session_id
+    exercise_id = exercise_set.exercise_id
+
     db.delete(exercise_set)
+    db.flush()
+
+    remaining_sets = db.scalars(
+        select(ExerciseSet)
+        .where(
+            ExerciseSet.session_id == session_id,
+            ExerciseSet.exercise_id == exercise_id,
+        )
+        .order_by(ExerciseSet.set_number)
+    ).all()
+
+
+    # temporarily move set numbers out of the way
+    for index, exercise_set in enumerate(
+        remaining_sets,
+        start=1,
+    ):
+        exercise_set.set_number = -index
+
+    db.flush()
+
+    # assign the final sequential numbers
+    for index, exercise_set in enumerate(
+        remaining_sets,
+        start=1,
+    ):
+        exercise_set.set_number = index
+
     db.commit()
 
     return {"message": "Exercise set deleted successfully"}

@@ -186,9 +186,13 @@ async function addExerciseToWorkout(exercise) {
 
     exercise.added = true;
 
-    const exerciseCard = createExerciseCard(exercise);
+    const exerciseCard = createExerciseCard(
+        exercise,
+        [],
+        true,
+    );
 
-    activeExercises.appendChild(exerciseCard);
+    activeExercises.prepend(exerciseCard);
 
     showScreen(activeWorkout);
 }
@@ -231,16 +235,73 @@ async function deleteExerciseFromWorkout(
 
 // exercise card UI
 
-function createExerciseCard(exercise, savedSets = []) {
+function createExerciseCard(exercise, savedSets = [], expanded = false) {
     const card = document.createElement("div");
     card.classList.add("exercise-card");
+
+    const header = document.createElement("div");
+    header.classList.add("exercise-card-header");
 
     const title = document.createElement("h3");
     title.textContent = exercise.name;
 
-    const table = document.createElement("table");
+    const toggle = document.createElement("span");
+    toggle.textContent = expanded ? "▲" : "▼";
+    toggle.classList.add("exercise-card-toggle");
 
-    const header = document.createElement("tr");
+    const controls = document.createElement("div");
+    controls.classList.add("exercise-card-controls");
+
+    // Add Set button
+    const addSetButton = document.createElement("button");
+    addSetButton.textContent = "+ Set";
+    addSetButton.classList.add(
+        "exercise-card-button",
+        "exercise-card-add-set",
+    );
+
+    addSetButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        content.hidden = false;
+        toggle.textContent = "▲";
+
+        addSetRow(tbody, exercise);
+    });
+
+    // Delete Exercise button
+    const deleteExerciseButton = document.createElement("button");
+    deleteExerciseButton.textContent = "Delete";
+    deleteExerciseButton.classList.add(
+        "exercise-card-button",
+        "exercise-card-delete",
+    );
+
+    deleteExerciseButton.addEventListener("click", async (event) => {
+        event.stopPropagation();
+
+        await deleteExerciseFromWorkout(
+            exercise.id,
+            card,
+        );
+    });
+
+    controls.appendChild(addSetButton);
+    controls.appendChild(deleteExerciseButton);
+    controls.appendChild(toggle);
+
+    header.appendChild(title);
+    header.appendChild(controls);
+
+    const content = document.createElement("div");
+    content.classList.add("exercise-card-content");
+
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
+
+    // Table header
+    const tableHeader = document.createElement("tr");
 
     const setHeader = document.createElement("th");
     setHeader.textContent = "Set";
@@ -251,42 +312,35 @@ function createExerciseCard(exercise, savedSets = []) {
     const actionHeader = document.createElement("th");
     actionHeader.textContent = "";
 
-    header.appendChild(setHeader);
-    header.appendChild(inputHeader);
-    header.appendChild(actionHeader);
+    tableHeader.appendChild(setHeader);
+    tableHeader.appendChild(inputHeader);
+    tableHeader.appendChild(actionHeader);
 
-    table.appendChild(header);
+    thead.appendChild(tableHeader);
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    // Saved sets
     for (const set of savedSets) {
-        addSavedSetRow(table, exercise, set);
+        addSavedSetRow(tbody, exercise, set);
     }
 
-    const addSetButton = document.createElement("button");
-    addSetButton.textContent = "+ Add Set";
+    content.appendChild(table);
 
-    addSetButton.addEventListener("click", () => {
-        addSetRow(table, exercise);
+    header.addEventListener("click", () => {
+        const isExpanded = content.hidden;
+
+        content.hidden = !isExpanded;
+        toggle.textContent = isExpanded ? "▲" : "▼";
     });
 
+    content.hidden = !expanded;
 
-    const deleteExerciseButton = document.createElement("button");
-    deleteExerciseButton.textContent = "Delete Exercise";
-
-    deleteExerciseButton.addEventListener("click", async () => {
-        await deleteExerciseFromWorkout(
-            exercise.id,
-            card,
-        );
-    });
-
-
-    card.appendChild(title);
-    card.appendChild(table);
-    card.appendChild(addSetButton);
-    card.appendChild(deleteExerciseButton);
+    card.appendChild(header);
+    card.appendChild(content);
 
     return card;
 }
-
 
 function getInputHeader(exercise) {
     if (exercise.exercise_type === "weighted") {
@@ -311,8 +365,14 @@ function getInputHeader(exercise) {
 
 // set management
 
-function addSetRow(table, exercise) {
-    const setNumber = table.rows.length;
+function addSetRow(tbody, exercise) {
+    const incompleteRow = tbody.querySelector("tr:not(.completed)");
+
+    if (incompleteRow) {
+        return;
+    }
+
+    const setNumber = tbody.rows.length + 1;
 
     const row = document.createElement("tr");
 
@@ -326,6 +386,9 @@ function addSetRow(table, exercise) {
 
     const saveButton = document.createElement("button");
     saveButton.textContent = "Add";
+
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Cancel";
 
     const inputs = createSetInputs(exercise);
 
@@ -342,15 +405,19 @@ function addSetRow(table, exercise) {
         );
     });
 
+    cancelButton.addEventListener("click", () => {
+        row.remove();
+    });
+
     actionCell.appendChild(saveButton);
+    actionCell.appendChild(cancelButton);
 
     row.appendChild(setCell);
     row.appendChild(inputCell);
     row.appendChild(actionCell);
 
-    table.appendChild(row);
+    tbody.prepend(row);
 }
-
 
 async function saveSet(
     exercise,
@@ -498,7 +565,7 @@ function buildSetData(exercise, setNumber, inputs) {
     return null;
 }
 
-function addSavedSetRow(table, exercise, set) {
+function addSavedSetRow(tbody, exercise, set) {
     const row = document.createElement("tr");
 
     const setCell = document.createElement("td");
@@ -522,12 +589,10 @@ function addSavedSetRow(table, exercise, set) {
         editSet(row, exercise, set, inputs, actionCell);
     });
 
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-
-    deleteButton.addEventListener("click", async () => {
-        await deleteSet(set.id, row);
-    });
+    const deleteButton = createDeleteButton(
+        set.id,
+        row,
+    );
 
     actionCell.appendChild(editButton);
     actionCell.appendChild(deleteButton);
@@ -538,13 +603,27 @@ function addSavedSetRow(table, exercise, set) {
     row.appendChild(inputCell);
     row.appendChild(actionCell);
 
-    table.appendChild(row);
+    tbody.prepend(row);
 }
 
-async function deleteSet(setId, row) {
+
+function renumberSets(tbody) {
+    const rows = Array.from(tbody.rows);
+
+    rows.forEach((row, index) => {
+        const setNumber = rows.length - index;
+
+        row.cells[0].textContent = setNumber;
+    });
+}
+
+async function deleteSet(setId, row, tbody) {
     await deleteExerciseSet(setId);
 
     row.remove();
+
+    renumberSets(tbody);
+
 }
 
 function editSet(row, exercise, set, inputs, actionCell) {
@@ -607,7 +686,11 @@ function createDeleteButton(setId, row) {
     button.textContent = "Delete";
 
     button.addEventListener("click", async () => {
-        await deleteSet(setId, row);
+        await deleteSet(
+            setId,
+            row,
+            row.parentElement,
+        );
     });
 
     return button;
